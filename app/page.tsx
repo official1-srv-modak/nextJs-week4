@@ -4,9 +4,19 @@ import Link from 'next/link';
 import styles from '@/app/ui/home.module.css';
 import { lusitana } from '@/app/ui/fonts';
 import Image from 'next/image';
+import { fetchRevenue, fetchLatestInvoices } from '@/app/lib/data'; // deleted for chap 9
+import RevenueChart from '@/app/ui/dashboard/revenue-chart';
+import { Suspense } from 'react';
+import { RevenueChartSkeleton,   LatestInvoicesSkeleton,   CardsSkeleton} from '@/app/ui/skeletons';
+import { fetchCardData } from '@/app/lib/data'; // Remove fetchLatestInvoices
+import LatestInvoices from './ui/dashboard/latest-invoices';
+import CardWrapper from '@/app/ui/dashboard/cards';
 
 
-export default function Page() {
+
+export default async function Page() {
+  const revenue = await fetchRevenue() // delete this line
+  const latestInvoices = await fetchLatestInvoices(); // deleted for chap 9
   return (
     <main className="flex min-h-screen flex-col p-6">
       <div className="flex h-20 shrink-0 items-end rounded-lg bg-blue-500 p-4 md:h-52">
@@ -37,6 +47,17 @@ export default function Page() {
             alt="Screenshots of the dashboard project showing desktop version"
           />
         </div>
+        <Suspense fallback={<RevenueChartSkeleton />}>
+          <RevenueChart/>
+        </Suspense>
+
+        <Suspense fallback={<LatestInvoicesSkeleton />}>
+          <LatestInvoices />
+        </Suspense>
+
+        <Suspense fallback={<CardsSkeleton />}>
+          <CardWrapper />
+        </Suspense>
       </div>
     </main>
   );
